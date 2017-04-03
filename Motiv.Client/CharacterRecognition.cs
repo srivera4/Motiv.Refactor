@@ -82,15 +82,15 @@ namespace Motiv.Client
         {
             var mapper = MapperFactory.Create<CharacterMapper>();
 
-            //This runs close to O(n) considering outer loop only has one item per row            
             foreach (var itemList in charDict)
             {
-                foreach (var item in itemList.Value)
+                var charInfoList = itemList.Value
+                    .Where(x => predicate(x.Character))
+                    .ToList();
+
+                foreach (var item in charInfoList)
                 {
-                    if (predicate(item.Character))
-                    {
-                        mapper.AddToMap(item.Character, item.Count);
-                    }                    
+                    mapper.AddToMap(item.Character, item.Count);
                 }
             }
 
