@@ -11,6 +11,7 @@ namespace Motiv.Client
         //Not enough time to refactor for DRY and solid.....
         private List<string> StringList;
         private CharMapperFactory MapperFactory;  
+
         public CharacterRecognition(List<string> stringList, CharMapperFactory mapperFactory)
         {
             this.StringList = stringList;
@@ -101,15 +102,11 @@ namespace Motiv.Client
         {
             var mapper = MapperFactory.Create<CharacterMapper>();
 
-            var joinedList = nonNumList
-                .Concat(numList);
-
-            var maxOrMin = joinedList
-                 .MaxOrMin(x => x.Count, isMax);
-
-            var charInfoList = joinedList
-                .Where(x => x.Count == maxOrMin)
+            List<CharInfo> joinedList = nonNumList
+                .Concat(numList)
                 .ToList();
+
+            var charInfoList = GetListWithMaxOrMin(joinedList, isMax);
 
             foreach (var item in charInfoList)
             {
