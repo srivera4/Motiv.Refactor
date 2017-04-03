@@ -30,18 +30,12 @@ namespace Motiv.Client
 
             foreach (var item in StringList)
             {
-                var query = item
+                var charInfoList = item
                     .GroupBy(x => x)
-                    .Select(x => new { c = x.Key, count = x.Count() });
+                    .Select(x => new CharInfo(x.Key, x.Count()))
+                    .ToList();
 
-                var UnOrderedMap = new List<CharInfo>();
-
-                foreach (var charItem in query)
-                {
-                    UnOrderedMap.Add(new CharInfo(charItem.c, charItem.count));
-                }
-
-                dictMap.Add(countKey, UnOrderedMap);
+                dictMap.Add(countKey, charInfoList);
                 countKey++;
             }
             return dictMap;
