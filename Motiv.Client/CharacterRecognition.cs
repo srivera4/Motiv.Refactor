@@ -58,14 +58,7 @@ namespace Motiv.Client
               
             foreach (var itemList in charDict)
             {
-                var listChar = new List<CharInfo>();
-
-                var maxOrMin = itemList.Value
-                    .MaxOrMin(x => x.Count, isMax);
-
-                var charInfoList = itemList.Value
-                    .Where(x => x.Count == maxOrMin)
-                    .ToList();
+                var charInfoList = GetListWithMaxOrMin(itemList.Value, isMax);
 
                 mapper.AddToMap(itemList.Key, charInfoList);                            
             }
@@ -100,49 +93,40 @@ namespace Motiv.Client
         /// <summary>
         /// Get Max or Min count from all characters provided in list
         /// </summary>
-        /// <param name="charDict"></param>
-        /// <param name="numDict"></param>
+        /// <param name="charInfo"></param>
+        /// <param name="numList"></param>
         /// <param name="MaxOrMinCount"></param>
         /// <returns></returns>
-        public ICharMapper GetMinOrMaxAllLines(Dictionary<char, int>  charDict, Dictionary<char, int> numDict, bool isMax)
+        public ICharMapper GetMinOrMaxAllLines(List<CharInfo> nonNumList, List<CharInfo> numList, bool isMax)
         {
             var mapper = MapperFactory.Create<CharacterMapper>();
 
-            var joinedList = charDict
-                .Concat(numDict);
+            var joinedList = nonNumList
+                .Concat(numList);
 
             var maxOrMin = joinedList
-                 .MaxOrMin(x => x.Value, isMax);
+                 .MaxOrMin(x => x.Count, isMax);
 
             var charInfoList = joinedList
-                .Where(x => x.Value == maxOrMin)
+                .Where(x => x.Count == maxOrMin)
                 .ToList();
 
             foreach (var item in charInfoList)
             {
-                mapper.AddToMap(item.Key, item.Value);
+                mapper.AddToMap(item.Character, item.Count);
             }
 
             return mapper;
+        }
 
-            //Since we have an OrderBy best possible runtime is O(n log n) Create Aggregate linq extension to reduce to O(N)
-            //var query = charDict
-            //    .Concat(numDict)
-            //    .OrderByWithDirection(x => x.Value, MaxOrMinCount.Item2)
-            //    .ToDictionary(x => x.Key, x => x.Value);
+        private List<CharInfo> GetListWithMaxOrMin(List<CharInfo> charInfoList, bool isMax)
+        {
+            var maxOrMin = charInfoList
+                            .MaxOrMin(x => x.Count, isMax);
 
-            //int count = 0;
-            //var dictionary = new Dictionary<string, int>();
-
-            //foreach (var item in query)
-            //{
-            //    if (MaxOrMinCount.Item1(item.Value,count))
-            //    {
-            //        mapper.AddToMap(item.Key, item.Value);
-            //        count = item.Value;
-            //    }
-            //}
-            //return mapper;
+            return charInfoList
+                    .Where(x => x.Count == maxOrMin)
+                    .ToList();
         }
     }
 }
