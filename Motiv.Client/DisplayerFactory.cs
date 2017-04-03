@@ -8,16 +8,11 @@ namespace Motiv.Client
     {
         private CharacterRecognition CharRecognition;
         private Dictionary<int, List<CharInfo>> UnOrderedDictionary;
-        private Tuple<Func<int,int,bool>, bool> MaxCount;
-        private Tuple<Func<int, int, bool>, bool> MinCount;
+
         public DisplayerFactory(CharacterRecognition charRecognition)
         {
             this.CharRecognition = charRecognition;
             this.UnOrderedDictionary = charRecognition.GetCharDict(true);
-
-            //Use tuples for now to combine similar items....refactor to own class(Tuples are slow but good for getting similar items combined quick)
-            this.MaxCount = Tuple.Create<Func<int, int, bool>, bool>((itemCount, compareCount) => (itemCount >= compareCount) || compareCount == 0, true);
-            this.MinCount = Tuple.Create<Func<int, int, bool>, bool>((itemCount, compareCount) => (itemCount <= compareCount) || compareCount == 0, false);
         }
 
         public IDisplayer CreateAllNonNumeric()
@@ -52,7 +47,7 @@ namespace Motiv.Client
             var mapperNumbers = CharRecognition.GetCountInAllLines(UnOrderedDictionary, x => char.IsDigit(x));
             var mapperLetters = CharRecognition.GetCountInAllLines(UnOrderedDictionary, x => !char.IsDigit(x));
  
-            var charMapper = CharRecognition.GetMinOrMaxAllLines(mapperLetters.GetMapping(), mapperNumbers.GetMapping(), MaxCount);
+            var charMapper = CharRecognition.GetMinOrMaxAllLines(mapperLetters.GetMapping(), mapperNumbers.GetMapping(),true);
 
             return new CharacterDisplayer(charMapper);
         }
@@ -63,7 +58,7 @@ namespace Motiv.Client
             var mapperNumbers = CharRecognition.GetCountInAllLines(UnOrderedDictionary, x => char.IsDigit(x));
             var mapperLetters = CharRecognition.GetCountInAllLines(UnOrderedDictionary, x => !char.IsDigit(x));
 
-            var charMapper = CharRecognition.GetMinOrMaxAllLines(mapperLetters.GetMapping(), mapperNumbers.GetMapping(), MinCount);
+            var charMapper = CharRecognition.GetMinOrMaxAllLines(mapperLetters.GetMapping(), mapperNumbers.GetMapping(),false);
 
             return new CharacterDisplayer(charMapper);
         }

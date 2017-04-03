@@ -104,28 +104,45 @@ namespace Motiv.Client
         /// <param name="numDict"></param>
         /// <param name="MaxOrMinCount"></param>
         /// <returns></returns>
-        public ICharMapper GetMinOrMaxAllLines(Dictionary<char, int>  charDict, Dictionary<char, int> numDict,Tuple<Func<int,int,bool>,bool> MaxOrMinCount)
+        public ICharMapper GetMinOrMaxAllLines(Dictionary<char, int>  charDict, Dictionary<char, int> numDict, bool isMax)
         {
             var mapper = MapperFactory.Create<CharacterMapper>();
 
-            //Since we have an OrderBy best possible runtime is O(n log n) Create Aggregate linq extension to reduce to O(N)
-            var query = charDict
-                .Concat(numDict)
-                .OrderByWithDirection(x => x.Value, MaxOrMinCount.Item2)
-                .ToDictionary(x => x.Key, x => x.Value);
+            var joinedList = charDict
+                .Concat(numDict);
 
-            int count = 0;
-            var dictionary = new Dictionary<string, int>();
+            var maxOrMin = joinedList
+                 .MaxOrMin(x => x.Value, isMax);
 
-            foreach (var item in query)
+            var charInfoList = joinedList
+                .Where(x => x.Value == maxOrMin)
+                .ToList();
+
+            foreach (var item in charInfoList)
             {
-                if (MaxOrMinCount.Item1(item.Value,count))
-                {
-                    mapper.AddToMap(item.Key, item.Value);
-                    count = item.Value;
-                }
+                mapper.AddToMap(item.Key, item.Value);
             }
+
             return mapper;
+
+            //Since we have an OrderBy best possible runtime is O(n log n) Create Aggregate linq extension to reduce to O(N)
+            //var query = charDict
+            //    .Concat(numDict)
+            //    .OrderByWithDirection(x => x.Value, MaxOrMinCount.Item2)
+            //    .ToDictionary(x => x.Key, x => x.Value);
+
+            //int count = 0;
+            //var dictionary = new Dictionary<string, int>();
+
+            //foreach (var item in query)
+            //{
+            //    if (MaxOrMinCount.Item1(item.Value,count))
+            //    {
+            //        mapper.AddToMap(item.Key, item.Value);
+            //        count = item.Value;
+            //    }
+            //}
+            //return mapper;
         }
     }
 }
