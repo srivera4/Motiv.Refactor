@@ -38,12 +38,12 @@ namespace Motiv.Client
 
         public IDisplayer CreateHighestOccurrPerRow()
         {
-            return new CharacterDisplayer(CharRecognition.CharcterCountPerRow(UnOrderedDictionary, MaxCount));
+            return new CharacterDisplayer(CharRecognition.CharcterCountPerRow(UnOrderedDictionary, true));
         }
 
         public IDisplayer CreateLowestOccurrPerRow()
         {
-            return new CharacterDisplayer(CharRecognition.CharcterCountPerRow(UnOrderedDictionary, MinCount));
+            return new CharacterDisplayer(CharRecognition.CharcterCountPerRow(UnOrderedDictionary, false));
         }
 
         public IDisplayer CreateMaxCharCountInList()

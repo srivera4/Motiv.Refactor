@@ -52,30 +52,22 @@ namespace Motiv.Client
         /// <param name="charDict"></param>
         /// <param name="MaxOrMinCount"></param>
         /// <returns></returns>
-        public ICharMapper CharcterCountPerRow(Dictionary<int,List<CharInfo>> charDict, Tuple<Func<int,int,bool>,bool> MaxOrMinCount)
+        public ICharMapper CharcterCountPerRow(Dictionary<int,List<CharInfo>> charDict, bool isMax)
         {
             var mapper = MapperFactory.Create<CharacterRowMapper>();
-
-            var charList = new Dictionary<int, List<CharInfo>>();
-                  
+              
             foreach (var itemList in charDict)
             {
-                int charCount = 0;
                 var listChar = new List<CharInfo>();
 
-                //Since we have an OrderBy best possible runtime is O(n log n) Create Aggregate linq extension to reduce to O(N)
-                var orderedList = itemList.Value
-                    .OrderByWithDirection(x => x.Count, MaxOrMinCount.Item2);
+                var maxOrMin = itemList.Value
+                    .MaxOrMin(x => x.Count, isMax);
 
-                foreach (var item in orderedList)
-                {                                                       
-                    if (MaxOrMinCount.Item1(item.Count,charCount))
-                    {
-                       listChar.Add(new CharInfo(item.Character,item.Count));
-                       charCount = item.Count;
-                    }                  
-                }
-                mapper.AddToMap(itemList.Key, listChar);
+                var charInfoList = itemList.Value
+                    .Where(x => x.Count == maxOrMin)
+                    .ToList();
+
+                mapper.AddToMap(itemList.Key, charInfoList);                            
             }
             return mapper;
         }
