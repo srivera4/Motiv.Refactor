@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DisplayerFactoryController.cs" />
+    <Compile Include="DisplayerFactory.cs" />
     <Compile Include="CharacterDisplayer.cs" />
     <Compile Include="CharacterMapper.cs" />
     <Compile Include="CharacterRecognition.cs" />
